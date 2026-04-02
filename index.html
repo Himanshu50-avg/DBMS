@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CampusCart is a fashion-focused storefront connected to MySQL using lightweight PHP APIs.">
+  <title>CampusCart | Fashion Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-shell">
+      <a class="brand" href="#home">CampusCart</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Open navigation" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="nav-links" id="navMenu">
+        <a href="#home">Home</a>
+        <a href="#products">Shop</a>
+        <a href="orders.html">Orders</a>
+        <a href="#services">Services</a>
+        <a href="#pricing">Pricing Plan</a>
+        <a href="#about">About Us</a>
+        <a href="#cart" class="nav-icon-link">Bag <span class="badge" id="navCartCount">0</span></a>
+        <a href="#checkout" class="nav-contact">Contact Us</a>
+        <button class="theme-toggle" id="themeToggle" type="button">Theme</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero-fashion" id="home">
+      <div class="hero-overlay"></div>
+      <div class="hero-shape hero-shape--left"></div>
+      <div class="hero-shape hero-shape--right"></div>
+      <div class="container hero-fashion__content reveal">
+        <p class="eyebrow">New Season Collection</p>
+        <h1>The Fashion Revolution in Clothing</h1>
+        <p>
+          Discover curated apparel, streetwear, and occasion looks in a boutique-style storefront powered by
+          a MySQL-backed product catalog.
+        </p>
+        <div class="hero-actions">
+          <a class="button button--primary" href="#products">Discover More</a>
+          <a class="button button--ghost" href="admin/index.php">Admin Dashboard</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="services-band" id="services">
+      <div class="container reveal">
+        <div class="section-intro">
+          <p class="eyebrow">Services</p>
+          <h2>Style-led shopping, curated collections, and seamless ordering</h2>
+        </div>
+        <div class="services-grid">
+          <article class="service-card">
+            <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=80" alt="Clothing rack collection">
+            <h3>Curated Collections</h3>
+          </article>
+          <article class="service-card">
+            <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=900&q=80" alt="Fashion apparel display">
+            <h3>Personal Styling</h3>
+          </article>
+          <article class="service-card">
+            <img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=900&q=80" alt="Fashion wall display">
+            <h3>Trend Forecasting</h3>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="catalog-section" id="products">
+      <div class="container catalog-layout">
+        <aside class="filter-panel reveal">
+          <div class="filter-block">
+            <div class="filter-heading-row">
+              <h3>Price Range</h3>
+              <span>^</span>
+            </div>
+            <div class="price-labels">
+              <span id="minPriceLabel">Rs. 0.00</span>
+              <span id="maxPriceLabel">Rs. 10000.00</span>
+            </div>
+            <div class="range-pair">
+              <input type="range" id="minPriceRange" min="0" max="10000" step="100" value="0">
+              <input type="range" id="maxPriceRange" min="0" max="10000" step="100" value="10000">
+            </div>
+          </div>
+
+          <div class="filter-block">
+            <h3>Category</h3>
+            <div class="category-list" id="categoryFilters"></div>
+          </div>
+
+          <div class="filter-block filter-block--note">
+            <p class="database-note" id="databaseStatus">Checking database connection...</p>
+          </div>
+        </aside>
+
+        <div class="catalog-main reveal">
+          <div class="catalog-topbar">
+            <div>
+              <p class="eyebrow">Product Catalog</p>
+              <h2>All products</h2>
+            </div>
+            <div class="sort-wrap">
+              <label for="sortSelect">Sort By:</label>
+              <select id="sortSelect">
+                <option value="featured">Featured</option>
+                <option value="low-high">Price Low to High</option>
+                <option value="high-low">Price High to Low</option>
+                <option value="name">Name</option>
+              </select>
+            </div>
+          </div>
+
+          <form class="search-form search-form--wide" id="searchForm">
+            <input type="search" id="searchInput" placeholder="Search products, category, or keyword">
+            <button class="search-button" type="submit" aria-label="Search">Search</button>
+          </form>
+
+          <div class="product-grid fashion-grid" id="productGrid"></div>
+          <div class="empty-state hidden" id="emptyState">
+            <h3>No products found</h3>
+            <p>Try changing the search, category, or price range.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--soft" id="cart">
+      <div class="container cart-layout">
+        <div class="cart-table reveal">
+          <div class="section-heading compact-heading">
+            <p class="eyebrow">Shopping Cart</p>
+            <h2>Your selected pieces</h2>
+          </div>
+          <div id="cartContent"></div>
+        </div>
+        <aside class="summary-card reveal" id="pricing">
+          <h3>Order Summary</h3>
+          <div class="summary-row">
+            <span>Total Items</span>
+            <strong id="summaryCount">0</strong>
+          </div>
+          <div class="summary-row">
+            <span>Total Price</span>
+            <strong id="summaryTotal">Rs. 0.00</strong>
+          </div>
+          <a class="button button--primary button--full" href="#checkout">Proceed to Checkout</a>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section auth-showcase" id="about">
+      <div class="container auth-grid">
+        <section class="form-card reveal" id="login">
+          <p class="eyebrow">Login</p>
+          <h2>Sign in to your fashion account</h2>
+          <form class="checkout-form api-form" data-endpoint="api/login.php" data-form-name="Login">
+            <label>
+              Email Address
+              <input type="email" name="email" placeholder="you@example.com" required>
+            </label>
+            <label>
+              Password
+              <input type="password" name="password" placeholder="Enter password" required>
+            </label>
+            <button class="button button--primary button--full" type="submit">Login</button>
+          </form>
+        </section>
+        <section class="form-card reveal" id="register">
+          <p class="eyebrow">Register</p>
+          <h2>Create your customer profile</h2>
+          <form class="checkout-form api-form" data-endpoint="api/register.php" data-form-name="Registration">
+            <label>
+              Full Name
+              <input type="text" name="name" placeholder="Your full name" required>
+            </label>
+            <label>
+              Email Address
+              <input type="email" name="email" placeholder="you@example.com" required>
+            </label>
+            <label>
+              Password
+              <input type="password" name="password" placeholder="Create password" required>
+            </label>
+            <button class="button button--ghost button--full" type="submit">Register</button>
+          </form>
+        </section>
+      </div>
+    </section>
+
+    <section class="section checkout-section" id="checkout">
+      <div class="container checkout-layout">
+        <section class="form-card reveal">
+          <p class="eyebrow">Checkout</p>
+          <h2>Complete your booking</h2>
+          <form class="checkout-form api-form" data-endpoint="api/checkout.php" data-form-name="Checkout">
+            <label>
+              Full Name
+              <input type="text" name="name" placeholder="Customer name" required>
+            </label>
+            <label>
+              Email Address
+              <input type="email" name="email" placeholder="customer@example.com" required>
+            </label>
+            <label>
+              Phone Number
+              <input type="tel" name="phone" placeholder="9876543210" required>
+            </label>
+            <label>
+              Delivery Address
+              <textarea name="address" rows="5" placeholder="Street, city, state, pin code" required></textarea>
+            </label>
+            <label>
+              Payment Method
+              <select name="payment_method">
+                <option>Cash on Delivery</option>
+                <option>UPI</option>
+                <option>Credit Card</option>
+              </select>
+            </label>
+            <button class="button button--primary button--full" type="submit">Place Order</button>
+          </form>
+        </section>
+        <aside class="summary-card reveal">
+          <h3>Store Notes</h3>
+          <ul class="feature-list">
+            <li>Products are loaded from MySQL when available.</li>
+            <li>Customer booking information is stored in the database.</li>
+            <li>Admins can add or delete products from the dashboard.</li>
+            <li>Recent bookings are visible to the admin panel.</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <h3>CampusCart</h3>
+        <p>Fashion-first storefront with PHP APIs, MySQL storage, and an admin dashboard.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#products">Shop</a></li>
+          <li><a href="orders.html">Orders</a></li>
+          <li><a href="#checkout">Checkout</a></li>
+          <li><a href="schema.sql">SQL Schema</a></li>
+          <li><a href="admin/index.php">Admin Dashboard</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Backend Files</h4>
+        <ul>
+          <li>api/products.php</li>
+          <li>api/register.php</li>
+          <li>api/login.php</li>
+          <li>api/checkout.php</li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
