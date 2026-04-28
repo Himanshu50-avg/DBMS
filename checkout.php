@@ -5,11 +5,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $customer = [
         'name' => trim($_POST['name'] ?? ''),
         'email' => trim($_POST['email'] ?? ''),
+        'phone' => trim($_POST['phone'] ?? ''),
         'address' => trim($_POST['address'] ?? ''),
         'payment_method' => trim($_POST['payment_method'] ?? 'Cash on Delivery'),
     ];
 
-    if ($customer['name'] && $customer['email'] && $customer['address']) {
+    if ($customer['name'] && $customer['email'] && $customer['phone'] && $customer['address']) {
         if (place_order($customer)) {
             flash_message('Order placed successfully.');
             header('Location: index.php');
@@ -38,6 +39,10 @@ require_once __DIR__ . '/includes/header.php';
                 <label>
                     Email Address
                     <input type="email" name="email" required>
+                </label>
+                <label>
+                    Phone Number
+                    <input type="tel" name="phone" required>
                 </label>
                 <label>
                     Delivery Address

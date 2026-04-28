@@ -66,6 +66,75 @@ function get_products(?string $search = null): array
     }));
 }
 
+function get_product_by_id(int $productId): ?array
+{
+    foreach (get_products() as $product) {
+        if ((int) $product['id'] === $productId) {
+            return $product;
+        }
+    }
+
+    return null;
+}
+
+function featured_products(int $limit = 4): array
+{
+    return array_slice(get_products(), 0, $limit);
+}
+
+function cart_items(): array
+{
+    $items = $_SESSION['cart'] ?? [];
+    $cart = [];
+
+    foreach ($items as $productId => $quantity) {
+        $product = get_product_by_id((int) $productId);
+        if (!$product) {
+            continue;
+        }
+
+        $product['quantity'] = (int) $quantity;
+        $product['line_total'] = ((float) $product['price']) * $product['quantity'];
+        $cart[] = $product;
+    }
+
+    return $cart;
+}
+
+function cart_count(): int
+{
+    return array_sum($_SESSION['cart'] ?? []);
+}
+
+function cart_total(): float
+{
+    $total = 0;
+    foreach (cart_items() as $item) {
+        $total += (float) $item['line_total'];
+    }
+
+    return $total;
+}
+
+function add_to_cart(int $productId, int $quantity = 1): void
+{
+    if (!isset($_SESSION['cart'])) {
+        $_SESSION['cart'] = [];
+    }
+
+    $_SESSION['cart'][$productId] = ($_SESSION['cart'][$productId] ?? 0) + max(1, $quantity);
+}
+
+function update_cart_quantity(int $productId, int $quantity): void
+{
+    if ($quantity <= 0) {
+        unset($_SESSION['cart'][$productId]);
+        return;
+    }
+
+    $_SESSION['cart'][$productId] = $quantity;
+}
+
 function create_user(string $name, string $email, string $password): array
 {
     $pdo = db();
@@ -226,6 +295,24 @@ function place_order_from_items(array $customer, array $items): array
         }
         return ['success' => false, 'message' => 'Order could not be stored. Check your database setup.'];
     }
+}
+
+function place_order(array $customer): bool
+{
+    $customerWithPhone = array_merge(
+        [
+            'phone' => trim($_POST['phone'] ?? '0000000000'),
+        ],
+        $customer
+    );
+
+    $result = place_order_from_items($customerWithPhone, cart_items());
+    if ($result['success']) {
+        $_SESSION['cart'] = [];
+        return true;
+    }
+
+    return false;
 }
 
 function admin_stats(): array
