@@ -1,0 +1,22 @@
+<?php
+require_once __DIR__ . '/../db.php';
+header('Content-Type: application/json');
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode(['success' => false, 'message' => 'Method not allowed.']);
+    exit;
+}
+
+$data = json_decode(file_get_contents('php://input'), true) ?? [];
+$name = trim($data['name'] ?? '');
+$email = trim($data['email'] ?? '');
+$password = trim($data['password'] ?? '');
+
+if (!$name || !$email || !$password) {
+    http_response_code(422);
+    echo json_encode(['success' => false, 'message' => 'Please complete all registration fields.']);
+    exit;
+}
+
+echo json_encode(create_user($name, $email, $password));
